@@ -65,9 +65,13 @@ and then you can do this in your view
 == Useful Links
 
 Indeed Webmaster Tools - http://www.indeed.com/tools/webmaster/
+
 Indeed XML Job Search Feed API - http://www.indeed.com/jsp/xmlsample.jsp
+
 Indeed Advanced Search - http://www.indeed.com/advanced_search
+
 will_paginate wiki - http://wiki.github.com/mislav/will_paginate
+
 Hpricot wiki - http://wiki.github.com/why/hpricot
 
 == Licence

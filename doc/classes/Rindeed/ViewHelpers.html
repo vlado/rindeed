@@ -116,7 +116,7 @@
       
         <div class="method-description">
           <p>
-doc
+Returns an html script tag for js file needed by indeed
 </p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
@@ -142,7 +142,7 @@ doc
       
         <div class="method-description">
           <p>
-doc
+Returns html with jobs by indeed attribution
 </p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
@@ -172,7 +172,9 @@ doc
       
         <div class="method-description">
           <p>
-doc
+Returns text containing company name and location for provided job. See
+also <tt><a href="ViewHelpers.html#M000010">indeed_job_location</a></tt>
+for options
 </p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000009-source');return false;">[Source]</a></p>
@@ -214,33 +216,40 @@ doc
       
         <div class="method-description">
           <p>
-doc
+Returns location for provided job
 </p>
+<h4>Options</h4>
+<ul>
+<li><tt>:show_country</tt> - set to <tt>true</tt> if you want country to be
+included in location
+
+</li>
+</ul>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000010-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000010-source">
 <pre>
-    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed/view_helpers.rb, line 40</span>
-40:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">indeed_job_location</span>(<span class="ruby-identifier">job</span>, <span class="ruby-identifier">options</span>={})
-41:       <span class="ruby-identifier">default_options</span> = {
-42:         <span class="ruby-identifier">:show_country</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
-43:       }
-44:       <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
-45:       <span class="ruby-identifier">location</span> = <span class="ruby-identifier">job</span>[<span class="ruby-identifier">:city</span>].<span class="ruby-identifier">to_s</span>
-46:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">location</span>.<span class="ruby-identifier">empty?</span>
-47:         <span class="ruby-identifier">location</span> = <span class="ruby-identifier">job</span>[<span class="ruby-identifier">:state</span>].<span class="ruby-identifier">to_s</span>
-48:       <span class="ruby-keyword kw">else</span>
-49:         <span class="ruby-identifier">location</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;, #{job[:state]}&quot;</span>
-50:       <span class="ruby-keyword kw">end</span>
-51:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:show_country</span>]
-52:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">location</span>.<span class="ruby-identifier">empty?</span>
-53:           <span class="ruby-identifier">location</span> = <span class="ruby-identifier">job</span>[<span class="ruby-identifier">:country</span>].<span class="ruby-identifier">to_s</span>
-54:         <span class="ruby-keyword kw">else</span>
-55:           <span class="ruby-identifier">location</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;, #{job[:country]}&quot;</span>
-56:         <span class="ruby-keyword kw">end</span>
-57:       <span class="ruby-keyword kw">end</span>
-58:       <span class="ruby-identifier">location</span>
-59:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed/view_helpers.rb, line 43</span>
+43:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">indeed_job_location</span>(<span class="ruby-identifier">job</span>, <span class="ruby-identifier">options</span>={})
+44:       <span class="ruby-identifier">default_options</span> = {
+45:         <span class="ruby-identifier">:show_country</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+46:       }
+47:       <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
+48:       <span class="ruby-identifier">location</span> = <span class="ruby-identifier">job</span>[<span class="ruby-identifier">:city</span>].<span class="ruby-identifier">to_s</span>
+49:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">location</span>.<span class="ruby-identifier">empty?</span>
+50:         <span class="ruby-identifier">location</span> = <span class="ruby-identifier">job</span>[<span class="ruby-identifier">:state</span>].<span class="ruby-identifier">to_s</span>
+51:       <span class="ruby-keyword kw">else</span>
+52:         <span class="ruby-identifier">location</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;, #{job[:state]}&quot;</span>
+53:       <span class="ruby-keyword kw">end</span>
+54:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:show_country</span>]
+55:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">location</span>.<span class="ruby-identifier">empty?</span>
+56:           <span class="ruby-identifier">location</span> = <span class="ruby-identifier">job</span>[<span class="ruby-identifier">:country</span>].<span class="ruby-identifier">to_s</span>
+57:         <span class="ruby-keyword kw">else</span>
+58:           <span class="ruby-identifier">location</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;, #{job[:country]}&quot;</span>
+59:         <span class="ruby-keyword kw">end</span>
+60:       <span class="ruby-keyword kw">end</span>
+61:       <span class="ruby-identifier">location</span>
+62:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
