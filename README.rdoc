@@ -1,17 +1,27 @@
 = Rindeed
 
 Rindeed is something like a wrapper around Indeed Web Services (XML interface).
+
 You can find more info about Indeed Web Services at:
+
   http://www.indeed.com/jsp/apiinfo.jsp
   http://www.indeed.com/jsp/xmlsample.jsp
 
-Rindeed depends on hpricot and will_paginate
+Rindeed depends on <b>hpricot</b> http://github.com/why/hpricot and <b>will_paginate</b> http://github.com/mislav/will_paginate
 
 == Installation
 
   $ ruby script/plugin install git://github.com/vlado/rindeed.git
 
-== Example
+After install you must set your publisher id and you can also set some default options that will be used in all searches.
+Good place to place this could be ApplicationController
+
+  class ApplicationController < ActionController::Base
+    Rindeed.publisher_id = "yourpublisherid"
+    Rindeed.default_options(:chnl => "mysite", :limit => 30)
+  end
+
+== Examples
 
 === Simple search
 
@@ -52,9 +62,13 @@ and then you can do this in your view
   <% end %>
 
 
-== TODO
-- modify query and location to be able to perform advanced search
-- view helpers
+== Useful Links
+
+Indeed Webmaster Tools - http://www.indeed.com/tools/webmaster/
+Indeed XML Job Search Feed API - http://www.indeed.com/jsp/xmlsample.jsp
+Indeed Advanced Search - http://www.indeed.com/advanced_search
+will_paginate wiki - http://wiki.github.com/mislav/will_paginate
+Hpricot wiki - http://wiki.github.com/why/hpricot
 
 == Licence
 

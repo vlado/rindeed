@@ -67,6 +67,10 @@
                 vendor/plugins/rindeed/lib/rindeed/version.rb
                 </a>
         <br />
+                <a href="../files/vendor/plugins/rindeed/lib/rindeed/view_helpers_rb.html">
+                vendor/plugins/rindeed/lib/rindeed/view_helpers.rb
+                </a>
+        <br />
                 <a href="../files/vendor/plugins/rindeed/lib/rindeed_rb.html">
                 vendor/plugins/rindeed/lib/rindeed.rb
                 </a>
@@ -92,9 +96,12 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000001">api_search</a>&nbsp;&nbsp;
-      <a href="#M000003">count</a>&nbsp;&nbsp;
-      <a href="#M000002">paginate</a>&nbsp;&nbsp;
+      <a href="#M000004">api_search</a>&nbsp;&nbsp;
+      <a href="#M000006">count</a>&nbsp;&nbsp;
+      <a href="#M000001">default_options</a>&nbsp;&nbsp;
+      <a href="#M000003">jobs_per_page=</a>&nbsp;&nbsp;
+      <a href="#M000005">paginate</a>&nbsp;&nbsp;
+      <a href="#M000002">publisher_id=</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -109,6 +116,7 @@
       <h3 class="section-bar">Classes and Modules</h3>
 
       Module <a href="Rindeed/VERSION.html" class="link">Rindeed::VERSION</a><br />
+Module <a href="Rindeed/ViewHelpers.html" class="link">Rindeed::ViewHelpers</a><br />
 Class <a href="Rindeed/Collection.html" class="link">Rindeed::Collection</a><br />
 Class <a href="Rindeed/Results.html" class="link">Rindeed::Results</a><br />
 
@@ -120,24 +128,9 @@ Class <a href="Rindeed/Results.html" class="link">Rindeed::Results</a><br />
       <div class="name-list">
         <table summary="Constants">
         <tr class="top-aligned-row context-row">
-          <td class="context-item-name">PUBLISHER_ID</td>
-          <td>=</td>
-          <td class="context-item-value">&quot;enter you publisher id (key) here&quot;</td>
-        </tr>
-        <tr class="top-aligned-row context-row">
           <td class="context-item-name">API_SEARCH_URL</td>
           <td>=</td>
           <td class="context-item-value">&quot;http://api.indeed.com/ads/apisearch&quot;</td>
-        </tr>
-        <tr class="top-aligned-row context-row">
-          <td class="context-item-name">JOBS_PER_PAGE</td>
-          <td>=</td>
-          <td class="context-item-value">20</td>
-        </tr>
-        <tr class="top-aligned-row context-row">
-          <td class="context-item-name">DEFAULT_OPTIONS</td>
-          <td>=</td>
-          <td class="context-item-value">{     :sort =&gt; &quot;relevance&quot;,     :start =&gt; 0,      :limit =&gt; JOBS_PER_PAGE, #      :fromage =&gt; 30, #      :filter =&gt; 1, #      :latlong =&gt; 0,   }</td>
         </tr>
         </table>
       </div>
@@ -156,7 +149,7 @@ Class <a href="Rindeed/Results.html" class="link">Rindeed::Results</a><br />
       <tr class="top-aligned-row context-row">
         <td>&nbsp;</td>
         <td colspan="2" class="context-item-desc">
-Alias for <a href="Rindeed.html#M000001">api_search</a> method
+Alias for <a href="Rindeed.html#M000004">api_search</a> method
 
 </td>
       </tr>
@@ -172,11 +165,11 @@ Alias for <a href="Rindeed.html#M000001">api_search</a> method
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000001" class="method-detail">
-        <a name="M000001"></a>
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
 
         <div class="method-heading">
-          <a href="#M000001" class="method-signature">
+          <a href="#M000004" class="method-signature">
           <span class="method-name">api_search</span><span class="method-args">(what, where, options={})</span>
           </a>
         </div>
@@ -211,11 +204,27 @@ filtering.
 information for each job result.
 
 </li>
+<li><tt>:radius</tt> - Show jobs within (radius) miles radius
+
+</li>
+<li><tt>:sr</tt> - Source employer (directhire) or job site (recruiters)
+
+</li>
+<li><tt>:jt</tt> - Filter by job type
+(fulltime|parttime|contract|internship|temporary)
+
+</li>
+<li><tt>:salary</tt> - Desired salary. :salary =&gt; 90000 will show only jobs
+with salary greater then $90000
+
+</li>
 </ul>
 <p>
-# see <a
+there can be more options see <a
 href="http://www.indeed.com/jsp/xmlsample.jsp">www.indeed.com/jsp/xmlsample.jsp</a>
-for more info about options
+or <a
+href="http://www.indeed.com/advanced_search">www.indeed.com/advanced_search</a>
+for more info
 </p>
 <h4>Metadata</h4>
 <ul>
@@ -250,32 +259,94 @@ for more info about options
 </li>
 </ul>
           <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000004-source">
+<pre>
+    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 67</span>
+67:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">api_search</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">options</span>={})
+68:       <span class="ruby-identifier">uri</span> = <span class="ruby-identifier">assemble_uri</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-ivar">@@default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>))
+69:       <span class="ruby-identifier">results</span> = <span class="ruby-keyword kw">self</span><span class="ruby-operator">::</span><span class="ruby-constant">Results</span>.<span class="ruby-identifier">new</span>
+70:       <span class="ruby-identifier">results</span>.<span class="ruby-identifier">uri</span> = <span class="ruby-identifier">uri</span>
+71:       <span class="ruby-identifier">results</span>.<span class="ruby-identifier">success</span> = <span class="ruby-keyword kw">false</span>
+72:       <span class="ruby-keyword kw">begin</span>
+73:         <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Hpricot</span>(<span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">get</span>(<span class="ruby-constant">URI</span>(<span class="ruby-identifier">uri</span>)))
+74:         <span class="ruby-identifier">response</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'response'</span>)
+75:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">query</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'query'</span>).<span class="ruby-identifier">inner_html</span>
+76:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">location</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'location'</span>).<span class="ruby-identifier">inner_html</span>
+77:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">dupefilter</span> = <span class="ruby-identifier">determine_dupefilter</span>(<span class="ruby-identifier">response</span>)
+78:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">highlight</span> = <span class="ruby-identifier">determine_highlight</span>(<span class="ruby-identifier">response</span>)
+79:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">totalresults</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'totalresults'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
+80:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">start</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'start'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
+81:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">end</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'end'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
+82:         <span class="ruby-identifier">response</span>.<span class="ruby-identifier">search</span>(<span class="ruby-value str">'result'</span>).<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">res</span><span class="ruby-operator">|</span> <span class="ruby-identifier">results</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">parse_result</span>(<span class="ruby-identifier">res</span>) }
+83:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">success</span> = <span class="ruby-keyword kw">true</span>
+84:       <span class="ruby-keyword kw">rescue</span>
+85:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">totalresults</span> = <span class="ruby-value">0</span>
+86:       <span class="ruby-keyword kw">end</span>
+87:       <span class="ruby-identifier">results</span>
+88:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
+
+        <div class="method-heading">
+          <a href="#M000006" class="method-signature">
+          <span class="method-name">count</span><span class="method-args">(what, where, options={})</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Counts total number of jobs Params and options are same as for <a
+href="Rindeed.html#M000004">api_search</a>
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000006-source">
+<pre>
+     <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 118</span>
+118:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">count</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">options</span>={})
+119:       <span class="ruby-identifier">opts</span> = <span class="ruby-ivar">@@default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
+120:       <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:limit</span>] = <span class="ruby-value">1</span>
+121:       <span class="ruby-identifier">uri</span> = <span class="ruby-identifier">assemble_uri</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">opts</span>)
+122:       <span class="ruby-keyword kw">begin</span>
+123:         <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Hpricot</span>(<span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">get</span>(<span class="ruby-constant">URI</span>(<span class="ruby-constant">URI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">uri</span>))))
+124:         <span class="ruby-identifier">total_results</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'totalresults'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
+125:       <span class="ruby-keyword kw">rescue</span>
+126:         <span class="ruby-identifier">total_results</span> = <span class="ruby-value">0</span>
+127:       <span class="ruby-keyword kw">end</span>
+128:       <span class="ruby-identifier">total_results</span>
+129:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000001" class="method-detail">
+        <a name="M000001"></a>
+
+        <div class="method-heading">
+          <a href="#M000001" class="method-signature">
+          <span class="method-name">default_options</span><span class="method-args">(options)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+used to setup default options that will be used in all queries
+</p>
+          <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000001-source">
 <pre>
-    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 39</span>
-39:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">api_search</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">options</span>={})
-40:       <span class="ruby-identifier">uri</span> = <span class="ruby-identifier">assemble_uri</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-constant">DEFAULT_OPTIONS</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>))
-41:       <span class="ruby-identifier">results</span> = <span class="ruby-keyword kw">self</span><span class="ruby-operator">::</span><span class="ruby-constant">Results</span>.<span class="ruby-identifier">new</span>
-42:       <span class="ruby-identifier">results</span>.<span class="ruby-identifier">uri</span> = <span class="ruby-identifier">uri</span>
-43:       <span class="ruby-identifier">results</span>.<span class="ruby-identifier">success</span> = <span class="ruby-keyword kw">false</span>
-44:       <span class="ruby-keyword kw">begin</span>
-45:         <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Hpricot</span>(<span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">get</span>(<span class="ruby-constant">URI</span>(<span class="ruby-identifier">uri</span>)))
-46:         <span class="ruby-identifier">response</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'response'</span>)
-47:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">query</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'query'</span>).<span class="ruby-identifier">inner_html</span>
-48:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">location</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'location'</span>).<span class="ruby-identifier">inner_html</span>
-49:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">dupefilter</span> = <span class="ruby-identifier">determine_dupefilter</span>(<span class="ruby-identifier">response</span>)
-50:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">highlight</span> = <span class="ruby-identifier">determine_highlight</span>(<span class="ruby-identifier">response</span>)
-51:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">totalresults</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'totalresults'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
-52:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">start</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'start'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
-53:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">end</span> = <span class="ruby-identifier">response</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'end'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
-54:         <span class="ruby-identifier">response</span>.<span class="ruby-identifier">search</span>(<span class="ruby-value str">'result'</span>).<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">res</span><span class="ruby-operator">|</span> <span class="ruby-identifier">results</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">parse_result</span>(<span class="ruby-identifier">res</span>) }
-55:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">success</span> = <span class="ruby-keyword kw">true</span>
-56:       <span class="ruby-keyword kw">rescue</span>
-57:         <span class="ruby-identifier">results</span>.<span class="ruby-identifier">totalresults</span> = <span class="ruby-value">0</span>
-58:       <span class="ruby-keyword kw">end</span>
-59:       <span class="ruby-identifier">results</span>
-60:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 26</span>
+26:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">default_options</span>(<span class="ruby-identifier">options</span>)
+27:       <span class="ruby-ivar">@@default_options</span> = <span class="ruby-ivar">@@default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
+28:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -286,49 +357,40 @@ for more info about options
 
         <div class="method-heading">
           <a href="#M000003" class="method-signature">
-          <span class="method-name">count</span><span class="method-args">(what, where, options={})</span>
+          <span class="method-name">jobs_per_page=</span><span class="method-args">(per_page)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Counts total number of jobs Params and options are same as for <a
-href="Rindeed.html#M000001">api_search</a>
+value set here will be used in all search unless you add <tt>:limit</tt>
+option to find (<a href="Rindeed.html#M000004">api_search</a>) method
 </p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-     <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 90</span>
- 90:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">count</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">options</span>={})
- 91:       <span class="ruby-identifier">opts</span> = <span class="ruby-constant">DEFAULT_OPTIONS</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
- 92:       <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:limit</span>] = <span class="ruby-value">1</span>
- 93:       <span class="ruby-identifier">uri</span> = <span class="ruby-identifier">assemble_uri</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">opts</span>)
- 94:       <span class="ruby-keyword kw">begin</span>
- 95:         <span class="ruby-identifier">doc</span> = <span class="ruby-constant">Hpricot</span>(<span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">get</span>(<span class="ruby-constant">URI</span>(<span class="ruby-constant">URI</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">uri</span>))))
- 96:         <span class="ruby-identifier">total_results</span> = <span class="ruby-identifier">doc</span>.<span class="ruby-identifier">at</span>(<span class="ruby-value str">'totalresults'</span>).<span class="ruby-identifier">inner_html</span>.<span class="ruby-identifier">to_i</span>
- 97:       <span class="ruby-keyword kw">rescue</span>
- 98:         <span class="ruby-identifier">total_results</span> = <span class="ruby-value">0</span>
- 99:       <span class="ruby-keyword kw">end</span>
-100:       <span class="ruby-identifier">total_results</span>
-101:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 36</span>
+36:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">jobs_per_page=</span>(<span class="ruby-identifier">per_page</span>)
+37:       <span class="ruby-ivar">@@jobs_per_page</span> = <span class="ruby-identifier">per_page</span>
+38:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
       </div>
 
-      <div id="method-M000002" class="method-detail">
-        <a name="M000002"></a>
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
 
         <div class="method-heading">
-          <a href="#M000002" class="method-signature">
+          <a href="#M000005" class="method-signature">
           <span class="method-name">paginate</span><span class="method-args">(what, where, options={})</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-Similar to <a href="Rindeed.html#M000001">api_search</a> (find) method,
+Similar to <a href="Rindeed.html#M000004">api_search</a> (find) method,
 with differnce that it returns <a
 href="Rindeed/Collection.html">Rindeed::Collection</a> allowing us to use
 will_paginate functionality for pagination
@@ -341,7 +403,7 @@ will_paginate functionality for pagination
 </ul>
 <p>
 All other options are identical as with <a
-href="Rindeed.html#M000001">api_search</a> method
+href="Rindeed.html#M000004">api_search</a> method
 </p>
 <p>
 See <a
@@ -349,25 +411,52 @@ href="http://mislav.uniqpath.com/static/will_paginate/doc">mislav.uniqpath.com/s
 for more info
 </p>
           <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000005-source">
+<pre>
+     <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 100</span>
+100:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">paginate</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">options</span>={})
+101:       <span class="ruby-identifier">default_options</span> = <span class="ruby-ivar">@@default_options</span>.<span class="ruby-identifier">merge</span>({ <span class="ruby-identifier">:page</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:limit</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@@jobs_per_page</span> })
+102:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:limit</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:per_page</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:per_page</span>]
+103:       <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
+104:       <span class="ruby-identifier">results</span> = <span class="ruby-keyword kw">self</span><span class="ruby-operator">::</span><span class="ruby-constant">Collection</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:page</span>], <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:limit</span>]) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pager</span><span class="ruby-operator">|</span>
+105:         <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:limit</span>] = <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">per_page</span>
+106:         <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:start</span>] = <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">offset</span>
+107:         <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">api_search</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">opts</span>)
+108:         <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">result</span>) <span class="ruby-comment cmt"># inject the result array into the paginated collection</span>
+109:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">total_entries</span> <span class="ruby-comment cmt"># the pager didn't manage to guess the total count, do it manually</span>
+110:           <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">total_entries</span> = <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">totalresults</span>
+111:         <span class="ruby-keyword kw">end</span>
+112:         <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">total_entries</span> = <span class="ruby-value">1000</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">total_entries</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1000</span> <span class="ruby-comment cmt"># limits number of jobs to 1000 (max that Indeed API returns)</span>
+113:       <span class="ruby-keyword kw">end</span>
+114:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000002" class="method-detail">
+        <a name="M000002"></a>
+
+        <div class="method-heading">
+          <a href="#M000002" class="method-signature">
+          <span class="method-name">publisher_id=</span><span class="method-args">(pub_id)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+used to setup your Publisher ID. The search won&#8216;t work unless you set
+this
+</p>
+          <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 72</span>
-72:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">paginate</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">options</span>={})
-73:       <span class="ruby-identifier">default_options</span> = <span class="ruby-constant">DEFAULT_OPTIONS</span>.<span class="ruby-identifier">merge</span>({ <span class="ruby-identifier">:page</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">:limit</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">JOBS_PER_PAGE</span> })
-74:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:limit</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:per_page</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:per_page</span>]
-75:       <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">default_options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
-76:       <span class="ruby-identifier">results</span> = <span class="ruby-keyword kw">self</span><span class="ruby-operator">::</span><span class="ruby-constant">Collection</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:page</span>], <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:limit</span>]) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pager</span><span class="ruby-operator">|</span>
-77:         <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:limit</span>] = <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">per_page</span>
-78:         <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:start</span>] = <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">offset</span>
-79:         <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">api_search</span>(<span class="ruby-identifier">what</span>, <span class="ruby-identifier">where</span>, <span class="ruby-identifier">opts</span>)
-80:         <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">result</span>) <span class="ruby-comment cmt"># inject the result array into the paginated collection</span>
-81:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">total_entries</span> <span class="ruby-comment cmt"># the pager didn't manage to guess the total count, do it manually</span>
-82:           <span class="ruby-comment cmt">#pager.total_entries = self.count(what, where, opts)</span>
-83:           <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">total_entries</span> = <span class="ruby-identifier">pager</span>.<span class="ruby-identifier">totalresults</span>
-84:         <span class="ruby-keyword kw">end</span>
-85:       <span class="ruby-keyword kw">end</span>
-86:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File vendor/plugins/rindeed/lib/rindeed.rb, line 31</span>
+31:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">publisher_id=</span>(<span class="ruby-identifier">pub_id</span>)
+32:       <span class="ruby-ivar">@@publisher_id</span> = <span class="ruby-identifier">pub_id</span>
+33:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>

@@ -1,17 +1,42 @@
+require "hpricot" unless defined? Hpricot
+require "will_paginate" unless defined? WillPaginate
+
+require "rindeed/collection"
+require "rindeed/results"
+require "rindeed/view_helpers"
+require "rindeed/version"
+require 'rindeed'
+
 module Rindeed
-  PUBLISHER_ID = "enter you publisher id (key) here"
   API_SEARCH_URL = "http://api.indeed.com/ads/apisearch"
-  JOBS_PER_PAGE = 20
-  DEFAULT_OPTIONS = {
+  
+  @@publisher_id = ""
+  @@jobs_per_page = 20
+  @@default_options = {
     :sort => "relevance",
     :start => 0, 
-    :limit => JOBS_PER_PAGE, # 
+    :limit => @@jobs_per_page, # 
     :fromage => 30, # 
     :filter => 1, # 
     :latlong => 0,
   }
   
   class << self
+    
+    # Used to setup default options that will be used in all queries.
+    def default_options(options)
+      @@default_options = @@default_options.merge(options)
+    end
+    
+    # Used to setup your Publisher ID. The search won't work unless you set this.
+    def publisher_id=(pub_id)
+      @@publisher_id = pub_id
+    end
+    
+    # Value set here will be used in all search unless you add <tt>:limit</tt> option to find (api_search) method
+    def jobs_per_page=(per_page)
+      @@jobs_per_page = per_page
+    end
     
     # Sends search query to Indeed XML interface for <tt>what</tt> (job title, keywords or company name)
     # in the <tt>where</tt> (city, state or zip code) area and returns results as Rindeed::Results instance (Array with Indeed metadata)
@@ -23,8 +48,12 @@ module Rindeed
     # * <tt>:fromage</tt> - Number of days back to search. Max is 30.
     # * <tt>:filter</tt> - Filter duplicate results. 0 turns off duplicate job filtering.
     # * <tt>:latlong</tt> - If latlong=1, returns latitude and longitude information for each job result.
+    # * <tt>:radius</tt> - Show jobs within (radius) miles radius
+    # * <tt>:sr</tt> - Source employer (directhire) or job site (recruiters)
+    # * <tt>:jt</tt> - Filter by job type (fulltime|parttime|contract|internship|temporary)
+    # * <tt>:salary</tt> - Desired salary. :salary => 90000 will show only jobs with salary greater then $90000
     #
-    # # see http://www.indeed.com/jsp/xmlsample.jsp for more info about options
+    # There can be even more options. See http://www.indeed.com/jsp/xmlsample.jsp or http://www.indeed.com/advanced_search for more info
     #
     # ==== Metadata
     # * <tt>uri</tt> - Full uri used to fetch results
@@ -37,7 +66,7 @@ module Rindeed
     # * <tt>start</tt> - see options[:start]
     # * <tt>end</tt> - options[:start] + options[:limit]
     def api_search(what, where, options={})
-      uri = assemble_uri(what, where, DEFAULT_OPTIONS.merge(options))
+      uri = assemble_uri(what, where, @@default_options.merge(options))
       results = self::Results.new
       results.uri = uri
       results.success = false
@@ -70,7 +99,7 @@ module Rindeed
     #
     # See http://mislav.uniqpath.com/static/will_paginate/doc/ for more info
     def paginate(what, where, options={})
-      default_options = DEFAULT_OPTIONS.merge({ :page => 1, :limit => JOBS_PER_PAGE })
+      default_options = @@default_options.merge({ :page => 1, :limit => @@jobs_per_page })
       options[:limit] = options[:per_page] if options[:per_page]
       opts = default_options.merge(options)
       results = self::Collection.create(opts[:page], opts[:limit]) do |pager|
@@ -79,16 +108,15 @@ module Rindeed
         result = self.api_search(what, where, opts)
         pager.replace(result) # inject the result array into the paginated collection
         unless pager.total_entries # the pager didn't manage to guess the total count, do it manually
-          #pager.total_entries = self.count(what, where, opts)
           pager.total_entries = pager.totalresults
         end
+        pager.total_entries = 1000 if pager.total_entries > 1000 # limits number of jobs to 1000 (max that Indeed API returns)
       end
     end
     
-    # Counts total number of jobs
-    # Params and options are same as for api_search
+    # Counts total number of jobs. Params and options are same as for api_search
     def count(what, where, options={})
-      opts = DEFAULT_OPTIONS.merge(options)
+      opts = @@default_options.merge(options)
       opts[:limit] = 1
       uri = assemble_uri(what, where, opts)
       begin
@@ -103,7 +131,7 @@ module Rindeed
     private
     
     def assemble_uri(what, where, options={})
-      uri = "#{API_SEARCH_URL}?publisher=#{PUBLISHER_ID}&q=#{what}&l=#{where}" # &start=#{start}&limit=#{limit}"
+      uri = "#{API_SEARCH_URL}?publisher=#{@@publisher_id}&q=#{what}&l=#{where}" # &start=#{start}&limit=#{limit}"
       options.each { |key,value| uri << "&#{key}=#{value}" }
       URI.escape(uri)
     end
