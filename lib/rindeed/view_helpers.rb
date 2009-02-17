@@ -4,7 +4,7 @@ module Rindeed
     # Returns html with jobs by indeed attribution
     def indeed_attribution
       '<span id="indeed_at">
-    		<a href="http://www.indeed.com/">jobs</a> by <a href="http://www.indeed.com/" title="Job Search">
+    		<a href="http://www.indeed.com/" target="_blank">jobs</a> by <a href="http://www.indeed.com/" title="Job Search"  target="_blank">
     			<img src="http://www.indeed.com/p/jobsearch.gif" style="border:0;vertical-align:middle;" alt="job search" />
     		</a>
     	</span>'
