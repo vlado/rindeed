@@ -2,13 +2,13 @@ module Rindeed
   module ViewHelpers
     
     # Returns html with jobs by indeed attribution
-    def indeed_attribution
-      '<span id="indeed_at">
-    		<a href="http://www.indeed.com/" target="_blank">jobs</a> by <a href="http://www.indeed.com/" title="Job Search"  target="_blank">
-    			<img src="http://www.indeed.com/p/jobsearch.gif" style="border:0;vertical-align:middle;" alt="job search" />
-    		</a>
-    	</span>'
-    end
+     def indeed_attribution
+        '<span id="indeed_at">
+      		some <a href="http://www.indeed.com/?indpubnum='+Rindeed.publisher_id.to_s+'" target="_blank">jobs</a> by <a href="http://www.indeed.com/?indpubnum='+Rindeed.publisher_id.to_s+'" title="Job Search"  target="_blank">
+      			<img src="http://www.indeed.com/p/jobsearch.gif" style="border:0;vertical-align:middle;" alt="job search" />
+      		</a>
+      	</span>'
+      end
     
     # Returns an html script tag for js file needed by indeed
     def include_indeed_js

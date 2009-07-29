@@ -33,6 +33,11 @@ module Rindeed
       @@publisher_id = pub_id
     end
     
+    # Returns your Publisher ID.
+    def publisher_id
+      @@publisher_id
+    end
+    
     # Value set here will be used in all search unless you add <tt>:limit</tt> option to find (api_search) method
     def jobs_per_page=(per_page)
       @@jobs_per_page = per_page
